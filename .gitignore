@@ -1,3 +1,4 @@
 titanic/outputs/*.pt
 */*compressed*
 */*result*
+*/*/__pycache__*
