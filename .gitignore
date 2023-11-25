@@ -1,0 +1,3 @@
+titanic/outputs/*.pt
+*/*compressed*
+*/*result*
