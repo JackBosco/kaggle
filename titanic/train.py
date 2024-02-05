@@ -20,9 +20,9 @@ train_dataset = TorchDataset("compressed.csv")
 train_loader = DataLoader(dataset=train_dataset, batch_size=64, shuffle=True)
 
 # Instantiate model, optimizer, and hyperparameter(s)
-in_dim, feature_dim, out_dim = 7, 1024, 2
+in_dim, feature_dim, out_dim = 25, 512, 2
 loss_fn = nn.CrossEntropyLoss()
-epochs=2000
+epochs=4000
 lr =  1e-3
 
 classifier = BaseClassifier(in_dim, feature_dim, out_dim)
@@ -51,7 +51,6 @@ def train(epochs, batch_size\
         running_loss = 0.0
         for minibatch in train_loader:
             data, target = minibatch
-            print(data)
             data = data.flatten(start_dim=1)
 
             data = data.to(dev)
@@ -66,7 +65,8 @@ def train(epochs, batch_size\
             # Keep track of sum of loss of each minibatch
             running_loss += computed_loss.item()
         loss_lt.append(running_loss/len(train_loader))
-        print("Epoch: {} train loss: {}".format(epoch+1, running_loss/len(train_loader)))
+        if epoch % 200 == 0:
+        	print("Epoch: {} train loss: {:.4f}".format(epoch+1, running_loss/len(train_loader)))
     
     if plot:
         plt.plot([i for i in range(1,epochs+1)], loss_lt)

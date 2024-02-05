@@ -2,20 +2,22 @@
 Jack Bosco
 3/6/2023
 """
-from model import BaseClassifier
-from getdata import TorchOutDataset
+from model import ReverseClassifier
+from getdata import TorchInvDataset
 from torch import nn, Tensor
 import torch
 import sys
 from torch.utils.data import DataLoader
 import os
 import pandas as pd
+import numpy as np
 """
 First download files for use in custom ImageDataset example
 """
 
 # Load in MNIST dataset from PyTorch
-test_dataset = TorchOutDataset("test_compressed.csv")
+data = np.array([0.0, 1.0])
+test_dataset = TorchInvDataset(data)
 test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False)
 
 #get output file number and train
@@ -28,7 +30,7 @@ try:
 except:
 	raise Exception("No file found: " + filename)
 
-classifier = BaseClassifier(in_dim=25, feature_dim=512)
+classifier = ReverseClassifier(feature_dim=2048)
 
 def test(test_loader, stateDict, classifier=None):
 	classifier.load_state_dict(torch.load('outputs'+os.sep+stateDict))
@@ -37,6 +39,7 @@ def test(test_loader, stateDict, classifier=None):
 
 	with torch.no_grad():
 		for data, _ in test_loader:
+			# print(data)
 			# data = data.flatten(start_dim=1)
 			out = classifier(data)
 			out = list(out)
@@ -47,9 +50,3 @@ def test(test_loader, stateDict, classifier=None):
 
 final = test(test_loader=test_dataset, stateDict=filename, classifier=classifier)
 print(final)
-id = pd.read_csv("kaggle/input/test.csv").PassengerId
-df = pd.DataFrame(data={"PassengerId":id, "Survived":final})
-df.set_index("PassengerId").to_csv("result.csv")
-
-#utils.printTable(matrix, leftHeaders=False)
-#utils.confPlot(matrix=matrix, title='Epochs=40, Hidden_Layers=256')
